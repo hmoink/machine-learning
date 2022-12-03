@@ -1,0 +1,82 @@
+import numpy as np
+import pandas as pd
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Perceptron
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+world = [
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+[0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+[0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+[0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+[0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
+[0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1]
+]
+
+# bot의 좌표 bot = list[x][y]
+# 1번 = list[x-1][y-1]
+# 2번 = list[x-1][y]
+# 3번 = list[x-1][y+1]
+# 4번 = list[x][y+1]
+# 5번 = list[x+1][y+1]
+# 6번 = list[x+1][y]
+# 7번 = list[x+1][y-1]
+# 8번 = list[x][y-1]
+
+def check(x, y):   # x, y = bot 좌표
+    dx = [-1, -1, -1, 0, 1, 1, 1, 0]
+    dy = [-1, 0, 1, 1, 1, 0, -1, -1]
+    global result
+    for i in range(8):
+        pointX = x + dx[i]
+        pointY = y + dy[i]
+        a = world[pointX][pointY]
+        if pointX == -1:
+            a = 1
+        elif pointX == 14:
+            a = 1
+        if pointY == -1:
+            a = 1
+        elif pointY == 11:
+            a = 1
+        result.append(a)
+    print('주변 상황 :', result)
+    return result
+
+X_data = [
+[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 1, 1], [1, 0, 0, 0, 0, 0, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 1], [1, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 1, 1, 1, 1],
+[1, 1, 0, 0, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 0, 0], [0, 1, 1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 1, 1], [1, 1, 1, 0, 0, 0, 0, 1], [1, 1, 0, 0, 0, 0, 1, 1],
+[0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 0, 0, 0], [0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0],
+[0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 1, 1, 1, 0], [0, 0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 0, 1, 1, 0], [0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 1, 1, 1, 1, 1, 0], [0, 0, 0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 1, 1, 0, 0]
+]
+
+Y_target = [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4]
+Y_label = Y_target
+x_train,x_test,y_train,y_test = train_test_split(X_data,Y_label,test_size=0.2)
+
+
+
+ppn = Perceptron(max_iter=40, eta0=0.1, tol=1e-3, random_state =1)
+ppn.fit(x_train, y_train)
+y_pred = ppn.predict(x_test)
+
+classes = {1:'북', 2:'동', 3:'남', 4:'서'}
+
+
+
+
+
+bot_x = int(input('행 입력 : '))
+bot_y = int(input('열 입력 : '))
+result = []
+check(bot_x, bot_y)
+X = [np.array(result)]
+Y = ppn.predict(X)
+print('로봇이 가야할 방향 : {1}쪽'.format(X[0], classes[Y[0]]))
